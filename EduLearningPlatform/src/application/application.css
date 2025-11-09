@@ -1,0 +1,32 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+.loginpane{
+	/*-fx-background-color: #748CF1;*/
+	-fx-border-width: 2px 2px 2px 2px;
+	-fx-border-radius: 20px;
+	-fx-background-radius: 20px;
+	-fx-border-style: solid;
+	-fx-border-color:#748CF1;
+}
+.headerpane{
+	-fx-border-width: 2px 2px 2px 2px;
+	-fx-border-radius: 20px;
+	-fx-background-radius: 20px;
+	-fx-border-style: solid;
+	-fx-border-color:#748CF1;
+}
+.sidebar{
+	-fx-background-color: #748CF1;
+	-fx-border-width: 2px 2px 2px 2px;
+	-fx-border-radius:0 20px 20px 0;
+	-fx-background-radius:0 20px 20px 0;
+	-fx-border-style: solid;
+	-fx-border-color:#748CF1;
+}
+.avaterpane{
+	-fx-background-color: #ddd;
+	-fx-border-width: 2px 2px 2px 2px;
+	-fx-border-radius:20px;
+	-fx-background-radius:20px;
+	-fx-border-style: solid;
+	-fx-border-color:#748CF1;
+}

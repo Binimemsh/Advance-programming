@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.LoginControler">
+   <children>
+      <Pane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #0077B6;">
+         <children>
+            <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="125.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@\E:\project\EduLearningPlatform\src\book_10089764.png" />
+               </image>
+            </ImageView>
+            <Text fx:id="hesderpane1" fill="WHITE" layoutX="75.0" layoutY="258.0" strokeType="OUTSIDE" strokeWidth="0.0" text="EduLearning Platform">
+               <font>
+                  <Font name="Arial Bold" size="24.0" />
+               </font>
+            </Text>
+         </children></Pane>
+      <Pane fx:id="headerpane" layoutX="483.0" layoutY="35.0" prefHeight="40.0" prefWidth="231.0" style="-fx-background-color: #0077b6;" styleClass="headerpane" stylesheets="@application.css">
+         <children>
+            <Text fx:id="hesderpane" fill="WHITE" layoutX="27.0" layoutY="28.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Wellcome Back">
+               <font>
+                  <Font name="Arial Bold" size="24.0" />
+               </font>
+            </Text>
+         </children>
+      </Pane>
+      <Pane fx:id="loginpane" layoutX="480.0" layoutY="85.0" prefHeight="278.0" prefWidth="238.0" styleClass="loginpane" stylesheets="@application.css">
+         <children>
+            <TextField fx:id="usernameid" layoutX="80.0" layoutY="48.0" promptText="\@example" />
+            <Hyperlink fx:id="fgtpwd" layoutX="82.0" layoutY="147.0" text="forget password?" />
+            <Text fill="#0077b6" layoutX="100.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Login">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+            </Text>
+            <Button fx:id="loginbtn" layoutX="10.0" layoutY="178.0" mnemonicParsing="false" onAction="#handleLogin" prefHeight="25.0" prefWidth="218.0" text="Sign in" textFill="#0077b6">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Button>
+            <Hyperlink fx:id="sup" layoutX="162.0" layoutY="234.0" onAction="#creatAccount" text="SignUp" />
+            <Text layoutX="32.0" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="You don't have account?" />
+            <PasswordField fx:id="passwordid" layoutX="84.0" layoutY="118.0" promptText="password" />
+            <ImageView fitHeight="40.0" fitWidth="29.0" layoutX="28.0" layoutY="46.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@\E:\project\EduLearningPlatform\src\download.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="32.0" fitWidth="37.0" layoutX="31.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@\E:\project\EduLearningPlatform\src\images%20(1).png" />
+               </image>
+            </ImageView>
+            <ComboBox fx:id="rolecombo" layoutX="80.0" layoutY="81.0" prefHeight="25.0" prefWidth="149.0" promptText="Login Us" visibleRowCount="3" />
+            <ImageView fitHeight="32.0" fitWidth="32.0" layoutX="28.0" layoutY="80.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@\E:\project\EduLearningPlatform\src\project-management_12691934.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>

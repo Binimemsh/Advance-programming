@@ -18,7 +18,7 @@
          <children>
             <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="125.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@\E:\project\EduLearningPlatform\src\book_10089764.png" />
+                  <Image url="@\C:\Users\yemariam\git\repository\EduLearningPlatform\src\book_10089764.png" />
                </image>
             </ImageView>
             <Text fx:id="hesderpane1" fill="WHITE" layoutX="75.0" layoutY="258.0" strokeType="OUTSIDE" strokeWidth="0.0" text="EduLearning Platform">
@@ -55,18 +55,18 @@
             <PasswordField fx:id="passwordid" layoutX="84.0" layoutY="118.0" promptText="password" />
             <ImageView fitHeight="40.0" fitWidth="29.0" layoutX="28.0" layoutY="46.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@\E:\project\EduLearningPlatform\src\download.png" />
+                  <Image url="@\C:\Users\yemariam\git\repository\EduLearningPlatform\src\download.png" />
                </image>
             </ImageView>
             <ImageView fitHeight="32.0" fitWidth="37.0" layoutX="31.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@\E:\project\EduLearningPlatform\src\images%20(1).png" />
+                  <Image url="@\C:\Users\yemariam\git\repository\EduLearningPlatform\src\images%20(1).png" />
                </image>
             </ImageView>
             <ComboBox fx:id="rolecombo" layoutX="80.0" layoutY="81.0" prefHeight="25.0" prefWidth="149.0" promptText="Login Us" visibleRowCount="3" />
             <ImageView fitHeight="32.0" fitWidth="32.0" layoutX="28.0" layoutY="80.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@\E:\project\EduLearningPlatform\src\project-management_12691934.png" />
+                  <Image url="@\C:\Users\yemariam\git\repository\EduLearningPlatform\src\project-management_12691934.png" />
                </image>
             </ImageView>
          </children>

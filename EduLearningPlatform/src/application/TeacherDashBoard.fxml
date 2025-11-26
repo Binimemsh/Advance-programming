@@ -23,7 +23,14 @@
                <top>
                   <AnchorPane prefHeight="69.0" prefWidth="900.0" styleClass="avaterpane" stylesheets="@DashBoarStyle.css" BorderPane.alignment="CENTER">
                      <children>
-                        <AnchorPane layoutX="14.0" layoutY="-1.0" prefHeight="54.0" prefWidth="900.0" styleClass="loginpane" stylesheets="@DashBoarStyle.css" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <AnchorPane layoutX="14.0" layoutY="-1.0" prefHeight="54.0" prefWidth="900.0" styleClass="loginpane" stylesheets="@DashBoarStyle.css" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label layoutX="39.0" layoutY="11.0" text="EduLearning" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="20.0" />
+                                 </font>
+                              </Label>
+                           </children></AnchorPane>
                      </children>
                   </AnchorPane>
                </top>
@@ -99,7 +106,7 @@
                   </AnchorPane>
                </left>
                <center>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0" visible="false" BorderPane.alignment="CENTER">
                      <children>
                         <AnchorPane layoutX="14.0" layoutY="31.0" prefHeight="448.0" prefWidth="640.0" stylesheets="@DashBoarStyle.css" visible="false">
                            <children>

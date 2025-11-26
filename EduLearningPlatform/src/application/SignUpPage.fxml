@@ -18,7 +18,7 @@
          <children>
             <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="125.0" layoutY="79.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@\E:\project\EduLearningPlatform\src\book_10089764.png" />
+                  <Image url="@\C:\Users\yemariam\git\repository\EduLearningPlatform\src\book_10089764.png" />
                </image>
             </ImageView>
             <Text fill="WHITE" layoutX="75.0" layoutY="265.0" strokeType="OUTSIDE" strokeWidth="0.0" text="EduLearning Platform">

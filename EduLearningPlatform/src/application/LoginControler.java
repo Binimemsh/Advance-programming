@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ResourceBundle;
+import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -70,10 +71,18 @@ public class LoginControler implements Initializable{
 
      @FXML
     private void handleLogin(ActionEvent event) throws IOException {
-    	 String username = usernameid.getText().trim();
+    	  String username = usernameid.getText().trim();
     	  String role = rolecombo.getValue();
+    	  String password= passwordid.getText();
     	  Data.username= username;
-    	 switchScene(event, role + "DashBoard.fxml");
+    	  if (username.isEmpty() || role.isEmpty() || password.isEmpty() ) {
+	            showAlert(Alert.AlertType.WARNING, "Validation Error", "Please fill all fields.");
+	            return;
+	        }else {
+    	  switchScene(event, role + "DashBoard.fxml");
+	        }
+
+    	
     	 
      }
   
@@ -122,6 +131,7 @@ public class LoginControler implements Initializable{
          stage.show();
         
     }
+    
     private void showAlert(Alert.AlertType type, String title, String message) {
     	Alert alert = new Alert(type);
     	alert.setTitle(title);

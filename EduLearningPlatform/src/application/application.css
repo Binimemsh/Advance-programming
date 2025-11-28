@@ -30,3 +30,144 @@
 	-fx-border-style: solid;
 	-fx-border-color:#748CF1;
 }
+/* JavaFX CSS - Main application styles */
+
+.root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-background-color: #f8f9fa;
+}
+
+/* Toolbar styles */
+.tool-bar {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #f0f0f0);
+    -fx-padding: 8 12 8 12;
+    -fx-border-color: #ddd;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* ListView styles */
+.list-view {
+    -fx-background-color: white;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.list-cell {
+    -fx-padding: 8 12;
+    -fx-border-color: transparent;
+}
+
+.list-cell:even {
+    -fx-background-color: #f8f9fa;
+}
+
+.list-cell:odd {
+    -fx-background-color: white;
+}
+
+.list-cell:selected {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+/* Button styles */
+.button {
+    -fx-background-radius: 6;
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.button:pressed {
+    -fx-background-color: #21618c;
+}
+
+/* Label styles */
+.label {
+    -fx-text-fill: #2c3e50;
+}
+
+/* ToggleButton styles */
+.toggle-button {
+    -fx-background-color: #95a5a6;
+    -fx-text-fill: white;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #34495e;
+}
+
+/* ScrollPane styles */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: #ddd;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ImageView styles */
+.image-view {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 1);
+}
+
+/* Dark Theme */
+#dark {
+    -fx-background-color: #2c3e50;
+}
+
+#dark .tool-bar {
+    -fx-background-color: linear-gradient(to bottom, #34495e, #2c3e50);
+    -fx-border-color: #34495e;
+}
+
+#dark .list-view {
+    -fx-background-color: #34495e;
+    -fx-border-color: #4a6572;
+}
+
+#dark .list-cell {
+    -fx-text-fill: #ecf0f1;
+}
+
+#dark .list-cell:even {
+    -fx-background-color: #34495e;
+}
+
+#dark .list-cell:odd {
+    -fx-background-color: #2c3e50;
+}
+
+#dark .list-cell:selected {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+#dark .label {
+    -fx-text-fill: #ecf0f1;
+}
+
+#dark .button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+#dark .toggle-button {
+    -fx-background-color: #7f8c8d;
+}
+
+#dark .toggle-button:selected {
+    -fx-background-color: #3498db;
+}
+
+#dark .scroll-pane {
+    -fx-border-color: #4a6572;
+}/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */

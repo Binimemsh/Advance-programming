@@ -107,10 +107,10 @@ public class SignupControler {
         stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         scene = new Scene(root);
         stage.setScene(scene);
-        stage.show();
+        stage.show();}
    
        
-        try (Connection conn = DatabaseConnection.connect()) {
+      /*  try (Connection conn = DatabaseConnection.connect()) {
             String sql = "INSERT INTO users (fname, sname, email, grade, section, password, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, fname);
@@ -134,7 +134,7 @@ public class SignupControler {
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Database Error", "Could not create account: " + e.getMessage());
         }
-    }
+    }*/
 
     private void showAlert(Alert.AlertType type, String title, String message) {
         Alert alert = new Alert(type);

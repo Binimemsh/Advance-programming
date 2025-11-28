@@ -63,7 +63,7 @@
                   <Image url="@\C:\Users\yemariam\git\repository\EduLearningPlatform\src\images%20(1).png" />
                </image>
             </ImageView>
-            <ComboBox fx:id="rolecombo" layoutX="80.0" layoutY="81.0" prefHeight="25.0" prefWidth="149.0" promptText="Login Us" visibleRowCount="3" />
+            <ComboBox fx:id="rolecombo" editable="true" layoutX="80.0" layoutY="81.0" prefHeight="25.0" prefWidth="149.0" promptText="Login Us" visibleRowCount="3" />
             <ImageView fitHeight="32.0" fitWidth="32.0" layoutX="28.0" layoutY="80.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@\C:\Users\yemariam\git\repository\EduLearningPlatform\src\project-management_12691934.png" />

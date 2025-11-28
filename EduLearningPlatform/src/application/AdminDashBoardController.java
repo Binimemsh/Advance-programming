@@ -1,189 +1,203 @@
 package application;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
-public class AdminDashBoardController implements Initializable{
-	
+public class AdminDashBoardController {
+	 @FXML
+	    private TableColumn<?, ?> Coursenamecolumn;
 
-    @FXML
-    private Label username;
-    
+	    @FXML
+	    private Button addcoursebtn;
 
-    @FXML
-    private TableColumn<?, ?> CourseCodecolumn;
+	    @FXML
+	    private AnchorPane addcoursesection;
 
-    @FXML
-    private Button addcoursebtn;
+	    @FXML
+	    private Button addschedule;
 
-    @FXML
-    private AnchorPane addcoursesection;
+	    @FXML
+	    private Button addstudent;
 
-    @FXML
-    private Button addschedule;
+	    @FXML
+	    private Button addstudentbtn;
 
-    @FXML
-    private Button addstudent;
+	    @FXML
+	    private AnchorPane addstudentsection;
 
-    @FXML
-    private Button addstudentbtn;
+	    @FXML
+	    private Button addteacher;
 
-    @FXML
-    private Button addstudentbtn11;
+	    @FXML
+	    private Button addteacherbtn;
 
-    @FXML
-    private Button addstudentbtn111;
+	    @FXML
+	    private AnchorPane addteachersection;
 
-    @FXML
-    private Button addstudentbtn112;
+	    @FXML
+	    private TableColumn<?, ?> columncoursecode;
 
-    @FXML
-    private AnchorPane addstudentsection;
+	    @FXML
+	    private TableColumn<?, ?> columncoursename;
 
-    @FXML
-    private Button addteacher;
+	    @FXML
+	    private TableColumn<?, ?> columnstudLname;
 
-    @FXML
-    private Button addteacherbtn;
+	    @FXML
+	    private TableColumn<?, ?> columnstudclass;
 
-    @FXML
-    private AnchorPane addteachersection;
+	    @FXML
+	    private TableColumn<?, ?> columnstudid;
 
-    @FXML
-    private TableColumn<?, ?> columncoursecode;
+	    @FXML
+	    private TableColumn<?, ?> columnstudname;
 
-    @FXML
-    private TableColumn<?, ?> columncoursename;
+	    @FXML
+	    private TableColumn<?, ?> columnstudsection;
 
-    @FXML
-    private TableColumn<?, ?> columncrhour;
+	    @FXML
+	    private TableColumn<?, ?> columnstudsex;
 
-    @FXML
-    private TableColumn<?, ?> columnstudLname;
+	    @FXML
+	    private TableColumn<?, ?> columntecherLname;
 
-    @FXML
-    private TableColumn<?, ?> columnstudclass;
+	    @FXML
+	    private TableColumn<?, ?> columntecheremail;
 
-    @FXML
-    private TableColumn<?, ?> columnstudid;
+	    @FXML
+	    private TableColumn<?, ?> columntecherfield;
 
-    @FXML
-    private TableColumn<?, ?> columnstudname;
+	    @FXML
+	    private TableColumn<?, ?> columntecherid;
 
-    @FXML
-    private TableColumn<?, ?> columnstudsection;
+	    @FXML
+	    private TableColumn<?, ?> columntechername;
 
-    @FXML
-    private TableColumn<?, ?> columnstudsex;
+	    @FXML
+	    private TextField coursecode;
 
-    @FXML
-    private TableColumn<?, ?> columntecherLname;
+	    @FXML
+	    private TextField coursename;
 
-    @FXML
-    private TableColumn<?, ?> columntecheremail;
+	    @FXML
+	    private AnchorPane createScdsection;
 
-    @FXML
-    private TableColumn<?, ?> columntecherfield;
+	    @FXML
+	    private Button creatschedulebtn;
 
-    @FXML
-    private TableColumn<?, ?> columntecherid;
+	    @FXML
+	    private TableColumn<?, ?> daycolumn;
 
-    @FXML
-    private TableColumn<?, ?> columntechername;
+	    @FXML
+	    private Button deleteschedule;
 
-    @FXML
-    private TextField coursecode;
+	    @FXML
+	    private Button deletestudentbtn;
 
-    @FXML
-    private TextField coursename;
+	    @FXML
+	    private Button deleteteacher;
 
-    @FXML
-    private AnchorPane createScdsection;
+	    @FXML
+	    private Button deletteacher;
 
-    @FXML
-    private Button creatschedulebtn;
+	    @FXML
+	    private Button displayschedule;
 
-    @FXML
-    private Button creatschedulebtn1;
+	    @FXML
+	    private Button displaystud;
 
-    @FXML
-    private TextField credithour;
+	    @FXML
+	    private Button displayteacher;
 
-    @FXML
-    private TableColumn<?, ?> daycolumn;
+	    @FXML
+	    private Button logoutbtn;
 
-    @FXML
-    private Button deleteschedule;
+	    @FXML
+	    private TableColumn<?, ?> sclasscolumn;
 
-    @FXML
-    private Button deleteteacher;
+	    @FXML
+	    private TableColumn<?, ?> ssectioncloumn;
 
-    @FXML
-    private Button displayschedule;
+	    @FXML
+	    private TableColumn<?, ?> timecolumn;
 
-    @FXML
-    private Button displayteacher;
+	    @FXML
+	    private TextField txtCouresnamee;
 
-    @FXML
-    private TableColumn<?, ?> sclasscolumn;
+	    @FXML
+	    private TextField txtstudLname;
 
-    @FXML
-    private TableColumn<?, ?> ssectioncloumn;
+	    @FXML
+	    private TextField txtstudclass;
 
-    @FXML
-    private TableColumn<?, ?> timecolumn;
+	    @FXML
+	    private TextField txtstudid;
 
-    @FXML
-    private TextField txtCouresCode;
+	    @FXML
+	    private TextField txtstudname;
 
-    @FXML
-    private TextField txtstudLname;
+	    @FXML
+	    private TextField txtstudsection;
 
-    @FXML
-    private TextField txtstudclass;
+	    @FXML
+	    private ComboBox<?> txtstudsex;
 
-    @FXML
-    private TextField txtstudid;
+	    @FXML
+	    private TextField txtteacherLname;
 
-    @FXML
-    private TextField txtstudname;
+	    @FXML
+	    private TextField txtteacheremail;
 
-    @FXML
-    private TextField txtstudsection;
+	    @FXML
+	    private TextField txtteacherfield;
 
-    @FXML
-    private ComboBox<?> txtstudsex;
+	    @FXML
+	    private TextField txtteacherid;
 
-    @FXML
-    private TextField txtteacherLname;
+	    @FXML
+	    private TextField txtteachername;
 
-    @FXML
-    private TextField txtteacheremail;
+	    @FXML
+	    private Button updateschedule;
 
-    @FXML
-    private TextField txtteacherfield;
+	    @FXML
+	    private Button updatestudbtn;
 
-    @FXML
-    private TextField txtteacherid;
+	    @FXML
+	    private Button updateteacher;
 
-    @FXML
-    private TextField txtteachername;
+	    @FXML
+	    private Label username;
 
-    @FXML
-    private Button updateschedule;
 
-    @FXML
-    private Button updateteacher;
+    public void displayUsername() {
+    	String user = Data.username;
+    	user = user.substring(0, 1).toUpperCase()+ user.substring(1);
+    	username.setText(user);
+    }
+
+    public void initialize(URL location, ResourceBundle resource) {
+    	
+    	displayUsername();
+    }
 
 
 
@@ -203,7 +217,6 @@ public class AdminDashBoardController implements Initializable{
     	addstudentsection.setVisible(true);
 
     }
-
     @FXML
     void addTeacher(ActionEvent event) {
     	addstudentsection.setVisible(false);
@@ -257,6 +270,11 @@ public class AdminDashBoardController implements Initializable{
     }
 
     @FXML
+    void handleDisplayStudent(ActionEvent event) {
+
+    }
+
+    @FXML
     void handleDisplayTeacher(ActionEvent event) {
 
     }
@@ -270,17 +288,66 @@ public class AdminDashBoardController implements Initializable{
     void handleUpdateTeacher(ActionEvent event) {
 
     }
-	 
-    public void displayUsername() {
-    	String user = Data.username;
-    	user = user.substring(0, 1).toUpperCase()+ user.substring(1);
-    	username.setText(user);
+
+    @FXML
+    void handledeleteStudent(ActionEvent event) {
+
+    }
+
+    @FXML
+    void handleupdateStudent(ActionEvent event) {
+
     }
     
-    @Override
-    public void initialize(URL location, ResourceBundle resource) {
-    	//txtstudsex.getItems().addAll("Mail", "Femail");
-    	//txtstudsex.setPromptText("Gender");
-    	displayUsername();
+
+
+    private boolean confirmSignOut() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Sign Out");
+        alert.setHeaderText("Confirm Sign Out");
+        alert.setContentText("Are you sure you want to sign out?");
+        
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
     }
+
+    @FXML
+    private void signOut(ActionEvent event) {
+        try {
+        	if(confirmSignOut()){
+        	 Parent root = FXMLLoader.load(getClass().getResource("LoginPage.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+             stage.setScene(scene);
+             stage.show();
+            stage.centerOnScreen();
+            }else {
+            	showErrorAlert("Something happen! you are not Signed out.");
+            }
+            
+        } catch (IOException e) {
+            //logger.error("Error loading login screen", e);
+            showErrorAlert("Cannot load login screen.");
+        }
+    }
+
+   
+
+    private void showSuccessMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Success");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showErrorAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+
 }

@@ -2,25 +2,18 @@ package application;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
-
-
-
 
 public class DatabaseConnection {
-
-    public static Connection connect() {
-        Connection conn = null;
+    public static Connection connectDb() {
         try {
-            // Creates a database file "education.db" if it doesn’t exist
-        	String url = "jdbc:mysql://localhost:3306/Edulearning";
-        	String name1 = "root";
-        	String pass = "";
-            conn = DriverManager.getConnection(url, name1, pass);
-            System.out.println("✅ Connected to SQLite database.");
-        } catch (SQLException e) {
-            System.out.println("❌ Database connection failed: " + e.getMessage());
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connect = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/edulearning", "root", "");
+            System.out.println("Database connected successfully!");
+            return connect;
+        } catch (Exception e) {
+            System.err.println("Database connection failed: " + e.getMessage());
+            return null;
         }
-        return conn;
     }
 }

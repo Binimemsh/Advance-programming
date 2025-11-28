@@ -18,7 +18,7 @@ public class DatabaseSetup {
             );
         """;
 
-        try (Connection conn = DatabaseConnection.connect();
+        try (Connection conn = DatabaseConnection.connectDb();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
             System.out.println("✅ Users table ready.");

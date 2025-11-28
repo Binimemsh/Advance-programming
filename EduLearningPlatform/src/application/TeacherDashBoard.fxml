@@ -118,6 +118,7 @@
          <center>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
+                  <!-- Schedule Section -->
                   <AnchorPane fx:id="Schedulesection" layoutX="187.0" layoutY="59.0" prefHeight="460.0" prefWidth="674.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <AnchorPane layoutX="16.0" layoutY="98.0" prefHeight="356.0" prefWidth="648.0" stylesheets="@DashBoarStyle.css">
@@ -126,7 +127,7 @@
                               <String fx:value="shadow" />
                            </styleClass>
                            <children>
-                              <TableView layoutX="21.0" layoutY="28.0" prefHeight="319.0" prefWidth="620.0">
+                              <TableView fx:id="scheduleTable" layoutX="21.0" layoutY="28.0" prefHeight="319.0" prefWidth="620.0">
                                 <columns>
                                   <TableColumn fx:id="classcolumn" prefWidth="133.0" text="Class" />
                                   <TableColumn fx:id="sectioncolumn" prefWidth="110.0" text="Section" />
@@ -150,6 +151,8 @@
                         <Separator layoutX="16.0" layoutY="93.0" prefHeight="0.0" prefWidth="639.0" AnchorPane.topAnchor="91.0" />
                      </children>
                   </AnchorPane>
+
+                  <!-- Grade Submission Section -->
                   <AnchorPane fx:id="smtgradesection" layoutX="137.0" layoutY="119.0" prefHeight="460.0" prefWidth="674.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <AnchorPane layoutX="14.0" layoutY="101.0" prefHeight="336.0" prefWidth="220.0" stylesheets="@DashBoarStyle.css">
@@ -196,7 +199,7 @@
                               <String fx:value="shadow" />
                            </styleClass>
                            <children>
-                              <TableView layoutX="11.0" layoutY="68.0" prefHeight="259.0" prefWidth="386.0">
+                              <TableView fx:id="gradeTable" layoutX="11.0" layoutY="68.0" prefHeight="259.0" prefWidth="386.0">
                                 <columns>
                                   <TableColumn fx:id="idcolumn" prefWidth="75.0" text="ID" />
                                   <TableColumn fx:id="studnamecolumn" prefWidth="114.0" text="Name" />
@@ -226,6 +229,8 @@
                         </Pane>
                      </children>
                   </AnchorPane>
+
+                  <!-- Student List Section -->
                   <AnchorPane fx:id="studlistsection" layoutX="207.0" layoutY="56.0" prefHeight="460.0" prefWidth="674.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <AnchorPane layoutX="14.0" layoutY="116.0" prefHeight="330.0" prefWidth="216.0" stylesheets="@DashBoarStyle.css">
@@ -245,7 +250,7 @@
                               </Pane>
                               <TextField fx:id="byid" layoutX="25.0" layoutY="88.0" prefHeight="25.0" prefWidth="168.0" promptText="By ID" />
                               <TextField fx:id="byclass" layoutX="23.0" layoutY="140.0" prefHeight="25.0" prefWidth="171.0" promptText="By Class" />
-                              <Button fx:id="byidbtn" layoutX="23.0" layoutY="195.0" mnemonicParsing="false" onAction="#handleSearchById" prefHeight="33.0" prefWidth="172.0" style="-fx-background-color: #5ee16d;" text="By ID">
+                              <Button fx:id="byidbtn" layoutX="23.0" layoutY="195.0" mnemonicParsing="false" onAction="#HandleSearchByClass" prefHeight="33.0" prefWidth="172.0" style="-fx-background-color: #5ee16d;" text="By Class">
                                  <font>
                                     <Font name="Arial Bold" size="20.0" />
                                  </font>
@@ -254,7 +259,7 @@
                                     <String fx:value="shadow" />
                                  </styleClass>
                               </Button>
-                              <Button fx:id="schedulebtn11" layoutX="22.0" layoutY="252.0" mnemonicParsing="false" onAction="#HandleSearchByClass" prefHeight="33.0" prefWidth="172.0" style="-fx-background-color: #5ee16d;" text="All">
+                              <Button fx:id="schedulebtn11" layoutX="22.0" layoutY="252.0" mnemonicParsing="false" onAction="#handleSearchById" prefHeight="33.0" prefWidth="172.0" style="-fx-background-color: #5ee16d;" text="By ID">
                                  <font>
                                     <Font name="Arial Bold" size="20.0" />
                                  </font>
@@ -281,7 +286,7 @@
                               <String fx:value="sidebarpane" />
                            </styleClass>
                            <children>
-                              <TableView layoutX="5.0" layoutY="51.0" prefHeight="270.0" prefWidth="419.0">
+                              <TableView fx:id="studentTable" layoutX="5.0" layoutY="51.0" prefHeight="270.0" prefWidth="419.0">
                                 <columns>
                                   <TableColumn fx:id="idcolumn" prefWidth="75.0" text="ID" />
                                   <TableColumn fx:id="namecolumn" prefWidth="75.0" text="Name" />

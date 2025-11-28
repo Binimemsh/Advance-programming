@@ -26,7 +26,8 @@
                               <Font name="Arial Bold" size="35.0" />
                            </font>
                         </Label>
-                     </children></AnchorPane>
+                     </children>
+                  </AnchorPane>
                </children>
             </AnchorPane>
          </top>
@@ -71,7 +72,7 @@
                               <String fx:value="shadow" />
                            </styleClass>
                         </Button>
-                        <Button fx:id="resultbtn" layoutX="19.0" layoutY="89.0" mnemonicParsing="false" onAction="#handleDisplayResult" prefHeight="37.0" prefWidth="164.0" stylesheets="@DashBoarStyle.css" text="Totale Result">
+                        <Button fx:id="resultbtn" layoutX="19.0" layoutY="89.0" mnemonicParsing="false" onAction="#handleDisplayResult" prefHeight="37.0" prefWidth="164.0" stylesheets="@DashBoarStyle.css" text="Total Result">
                            <font>
                               <Font name="Arial Bold" size="18.0" />
                            </font>
@@ -80,7 +81,7 @@
                               <String fx:value="shadow" />
                            </styleClass>
                         </Button>
-                        <Button fx:id="clschedulebtn" layoutX="19.0" layoutY="135.0" mnemonicParsing="false" onAction="#handleDisplaySchedule" stylesheets="@DashBoarStyle.css" text="Class Schedule">
+                        <Button fx:id="clschedulebtn" layoutX="19.0" layoutY="135.0" mnemonicParsing="false" onAction="#handleDisplaySchedule" prefHeight="37.0" prefWidth="164.0" stylesheets="@DashBoarStyle.css" text="Class Schedule">
                            <font>
                               <Font name="Arial Bold" size="18.0" />
                            </font>
@@ -89,7 +90,7 @@
                               <String fx:value="shadow" />
                            </styleClass>
                         </Button>
-                        <Button fx:id="signout" layoutX="17.0" layoutY="197.0" mnemonicParsing="false" onAction="#signOut" stylesheets="@DashBoarStyle.css" text="Sign out">
+                        <Button fx:id="logoutbtn" layoutX="17.0" layoutY="197.0" mnemonicParsing="false" onAction="#signOut" prefHeight="37.0" prefWidth="166.0" stylesheets="@DashBoarStyle.css" text="Sign out">
                            <font>
                               <Font name="Arial Bold" size="15.0" />
                            </font>
@@ -110,6 +111,7 @@
                <children>
                   <AnchorPane layoutX="96.0" layoutY="41.0" prefHeight="445.0" prefWidth="681.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
+                        <!-- Results Section -->
                         <AnchorPane fx:id="resultsection" layoutX="14.0" layoutY="14.0" prefHeight="445.0" prefWidth="681.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="16.0" layoutY="86.0" prefHeight="337.0" prefWidth="642.0" stylesheets="@DashBoarStyle.css">
@@ -118,12 +120,12 @@
                                     <String fx:value="sidebarpane" />
                                  </styleClass>
                                  <children>
-                                    <TableView layoutX="15.0" layoutY="13.0" prefHeight="307.0" prefWidth="615.0">
+                                    <TableView fx:id="resultTable" layoutX="15.0" layoutY="13.0" prefHeight="307.0" prefWidth="615.0">
                                       <columns>
                                         <TableColumn fx:id="idcolumn" prefWidth="150.0" text="ID" />
-                                        <TableColumn fx:id="namecolumn" minWidth="0.0" prefWidth="152.0" text="Name" />
-                                          <TableColumn fx:id="coursecolumn" minWidth="0.0" prefWidth="152.0" text="Course" />
-                                          <TableColumn fx:id="resultcolumn" minWidth="0.0" prefWidth="156.0" text="Result(100%)" />
+                                        <TableColumn fx:id="namecolumn" minWidth="0.0" prefWidth="152.0" text="Course Name" />
+                                          <TableColumn fx:id="coursecolumn" minWidth="0.0" prefWidth="152.0" text="Course Code" />
+                                          <TableColumn fx:id="resultcolumn" minWidth="0.0" prefWidth="156.0" text="Grade" />
                                       </columns>
                                     </TableView>
                                  </children>
@@ -139,6 +141,8 @@
                               </Pane>
                            </children>
                         </AnchorPane>
+
+                        <!-- Schedule Section -->
                         <AnchorPane fx:id="schedulesection" layoutX="96.0" layoutY="81.0" prefHeight="445.0" prefWidth="678.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
                               <AnchorPane layoutX="24.0" layoutY="92.0" prefHeight="338.0" prefWidth="634.0" stylesheets="@DashBoarStyle.css">
@@ -147,13 +151,13 @@
                                     <String fx:value="sidebarpane" />
                                  </styleClass>
                                  <children>
-                                    <TableView layoutX="20.0" layoutY="22.0" prefHeight="302.0" prefWidth="600.0">
+                                    <TableView fx:id="scheduleTable" layoutX="20.0" layoutY="22.0" prefHeight="302.0" prefWidth="600.0">
                                       <columns>
-                                        <TableColumn fx:id="moncolumn" prefWidth="123.0" text="Monday" />
-                                        <TableColumn fx:id="columntuw" prefWidth="123.0" text="Tuwesday" />
-                                          <TableColumn fx:id="columnwen" prefWidth="125.0" text="Wendsday" />
-                                          <TableColumn fx:id="columnthu" prefWidth="112.0" text="Thursday" />
-                                          <TableColumn fx:id="columnfri" prefWidth="112.0" text="Friday" />
+                                        <TableColumn fx:id="moncolumn" prefWidth="120.0" text="Monday" />
+                                        <TableColumn fx:id="columntuw" prefWidth="120.0" text="Tuesday" />
+                                          <TableColumn fx:id="columnwen" prefWidth="120.0" text="Wednesday" />
+                                          <TableColumn fx:id="columnthu" prefWidth="120.0" text="Thursday" />
+                                          <TableColumn fx:id="columnfri" prefWidth="120.0" text="Friday" />
                                       </columns>
                                     </TableView>
                                  </children>

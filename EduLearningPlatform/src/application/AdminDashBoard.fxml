@@ -281,7 +281,7 @@
                                                 <String fx:value="shadow" />
                                              </styleClass>
                                           </Button>
-                                          <Button fx:id="updateteacher" layoutX="15.0" layoutY="361.0" mnemonicParsing="false" onAction="#handlUpdateTeacher" prefHeight="37.0" prefWidth="91.0" style="-fx-background-color: #2f7fee;" stylesheets="@DashBoarStyle.css" text="Update">
+                                          <Button fx:id="updateteacher" layoutX="15.0" layoutY="361.0" mnemonicParsing="false" onAction="#handleUpdateTeacher" prefHeight="37.0" prefWidth="91.0" style="-fx-background-color: #2f7fee;" stylesheets="@DashBoarStyle.css" text="Update">
                                              <font>
                                                 <Font name="Arial Bold" size="18.0" />
                                              </font>

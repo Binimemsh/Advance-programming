@@ -106,7 +106,7 @@ public class StudentDashBoardController implements Initializable {
     @FXML
     void handleMaterial(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/courses_view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("courses_view.fxml"));
             Parent root = loader.load();
              
             Stage stage = new Stage();
@@ -140,14 +140,21 @@ public class StudentDashBoardController implements Initializable {
         // Load initial data
         displayStudentSchedule();
         displayStudentResults();
+        
+        // Show schedule section by default
+        resultsection.setVisible(true);
+        schedulesection.setVisible(false);
     }
 
     private void initializeDatabase() {
         try {
-            connect = DatabaseConnection.connectDb();
-            if (connect == null || connect.isClosed()) {
-                showErrorAlert("Database Error", "Cannot establish database connection");
-            }
+            // Use direct database connection similar to other controllers
+            String url = "jdbc:mysql://localhost:3306/EduLearning";
+            String user = "root";
+            String password = "";
+            
+            connect = DriverManager.getConnection(url, user, password);
+            System.out.println("Database connected successfully in Student Dashboard!");
         } catch (Exception e) {
             showErrorAlert("Database Error", "Cannot connect to database: " + e.getMessage());
             e.printStackTrace();
@@ -155,15 +162,15 @@ public class StudentDashBoardController implements Initializable {
     }
 
     private void setupTableColumns() {
-        // Schedule table columns
+        // Schedule table columns - Using property names that match ScheduleData getters
+        coursecolumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
         moncolumn.setCellValueFactory(new PropertyValueFactory<>("monday"));
         columntuw.setCellValueFactory(new PropertyValueFactory<>("tuesday"));
         columnwen.setCellValueFactory(new PropertyValueFactory<>("wednesday"));
         columnthu.setCellValueFactory(new PropertyValueFactory<>("thursday"));
         columnfri.setCellValueFactory(new PropertyValueFactory<>("friday"));
-        coursecolumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
 
-        // Results table columns
+        // Results table columns - Using property names that match GradeData getters
         idcolumn.setCellValueFactory(new PropertyValueFactory<>("studentId"));
         namecolumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
         resultcolumn.setCellValueFactory(new PropertyValueFactory<>("grade"));
@@ -174,21 +181,21 @@ public class StudentDashBoardController implements Initializable {
         
         if (connect == null) {
             showErrorAlert("Database Error", "No database connection");
+            addSampleScheduleData(); // Show sample data
             return;
         }
         
+        // Get student's class and section based on username
         String studentClass = getStudentClass();
         String studentSection = getStudentSection();
         
         if (studentClass == null || studentSection == null) {
-            showInfoAlert("Information", "Class or section information not found");
-            
-            // Add sample data for testing
+            showInfoAlert("Information", "Class or section information not found. Showing sample schedule.");
             addSampleScheduleData();
             return;
         }
         
-        String sql = "SELECT * FROM schedule WHERE class = ? AND section = ? ORDER BY day, time";
+        String sql = "SELECT course_name, day, time FROM schedule WHERE class = ? AND section = ? ORDER BY day, time";
         
         try {
             prepare = connect.prepareStatement(sql);
@@ -200,7 +207,8 @@ public class StudentDashBoardController implements Initializable {
             scheduleTable.setItems(scheduleList);
             
             if (scheduleList.isEmpty()) {
-                showInfoAlert("Schedule", "No schedule found for your class and section");
+                showInfoAlert("Schedule", "No schedule found for your class and section. Showing sample data.");
+                addSampleScheduleData();
             }
             
         } catch (SQLException e) {
@@ -243,20 +251,32 @@ public class StudentDashBoardController implements Initializable {
         
         // Create ScheduleData objects for each day
         for (String day : days) {
+            // Create weekly schedule data
             ScheduleData scheduleData = new ScheduleData();
-            scheduleData.setCourseName(day + " Schedule");
+            scheduleData.setCourseName(day); // Using day as course name for display
             
             String scheduleText = daySchedules.get(day).toString();
             if (scheduleText.isEmpty()) {
                 scheduleText = "No classes scheduled";
             }
             
+            // Set the appropriate day field
             switch (day) {
-                case "Monday": scheduleData.setMonday(scheduleText); break;
-                case "Tuesday": scheduleData.setTuesday(scheduleText); break;
-                case "Wednesday": scheduleData.setWednesday(scheduleText); break;
-                case "Thursday": scheduleData.setThursday(scheduleText); break;
-                case "Friday": scheduleData.setFriday(scheduleText); break;
+                case "Monday": 
+                    scheduleData.setMonday(scheduleText); 
+                    break;
+                case "Tuesday": 
+                    scheduleData.setTuesday(scheduleText); 
+                    break;
+                case "Wednesday": 
+                    scheduleData.setWednesday(scheduleText); 
+                    break;
+                case "Thursday": 
+                    scheduleData.setThursday(scheduleText); 
+                    break;
+                case "Friday": 
+                    scheduleData.setFriday(scheduleText); 
+                    break;
             }
             
             weeklySchedule.add(scheduleData);
@@ -264,24 +284,28 @@ public class StudentDashBoardController implements Initializable {
         
         return weeklySchedule;
     }
+    
     private void displayStudentResults() {
         gradeList = FXCollections.observableArrayList();
         
         if (connect == null) {
             showErrorAlert("Database Error", "No database connection");
+         
             return;
         }
         
         // Query grades for the current student
-        String sql = "SELECT g.course_code, g.grade, c.name as course_name " +
+        String sql = "SELECT g.course_code, g.grade, c.name AS course_name " +
                     "FROM grades g " +
-                    "LEFT JOIN courses c ON g.course_code = c.code " +
-                    "WHERE g.student_id = ? " +
-                    "ORDER BY g.course_code";
+                    "JOIN courses c ON g.course_code = c.code " +
+                    "JOIN students s ON g.student_id = s.id " +
+                    "WHERE s.id = ? OR s.name = ? " +
+                    "ORDER BY c.name";
         
         try {
             prepare = connect.prepareStatement(sql);
             prepare.setString(1, Data.username);
+            prepare.setString(2, Data.username);
             result = prepare.executeQuery();
             
             while (result.next()) {
@@ -289,10 +313,16 @@ public class StudentDashBoardController implements Initializable {
                 String courseCode = result.getString("course_code");
                 String grade = result.getString("grade");
                 
-                // FIXED: Correct constructor parameters
                 GradeData gradeData = new GradeData();
                 gradeData.setStudentId(Data.username);
-                gradeData.setCourseName(courseName != null ? courseName : courseCode);
+                
+                // Use course name if available, otherwise use course code
+                if (courseName != null && !courseName.isEmpty()) {
+                    gradeData.setCourseName(courseName);
+                } else {
+                    gradeData.setCourseName(courseCode);
+                }
+                
                 gradeData.setCourseCode(courseCode);
                 gradeData.setGrade(grade != null ? grade : "N/A");
                 
@@ -302,14 +332,14 @@ public class StudentDashBoardController implements Initializable {
             resultTable.setItems(gradeList);
             
             if (gradeList.isEmpty()) {
-                showInfoAlert("Results", "No grades found for your account");
-              //  addSampleGradeData();
+                showInfoAlert("Results", "No grades found for your account. Showing sample data.");
+             
             }
             
         } catch (SQLException e) {
             showErrorAlert("Database Error", "Error loading results: " + e.getMessage());
             e.printStackTrace();
-          //  addSampleGradeData();
+            
         } finally {
             closeDatabaseResources();
         }
@@ -318,19 +348,32 @@ public class StudentDashBoardController implements Initializable {
     private String getStudentClass() {
         if (connect == null) return null;
         
-        String sql = "SELECT class FROM students WHERE id = ? OR name = ?";
+        // First try to find by ID (username might be student ID)
+        String sql = "SELECT class FROM students WHERE id = ?";
         
         try {
             prepare = connect.prepareStatement(sql);
             prepare.setString(1, Data.username);
-            prepare.setString(2, Data.username);
             result = prepare.executeQuery();
             
             if (result.next()) {
                 return result.getString("class");
             }
+            
+            // If not found by ID, try by name
+            sql = "SELECT class FROM students WHERE name = ?";
+            prepare = connect.prepareStatement(sql);
+            prepare.setString(1, Data.username);
+            result = prepare.executeQuery();
+            
+            if (result.next()) {
+                return result.getString("class");
+            }
+            
         } catch (SQLException e) {
             System.err.println("Error getting student class: " + e.getMessage());
+        } finally {
+            closeDatabaseResources();
         }
         
         return null;
@@ -339,19 +382,31 @@ public class StudentDashBoardController implements Initializable {
     private String getStudentSection() {
         if (connect == null) return null;
         
-        String sql = "SELECT section FROM students WHERE id = ? OR name = ?";
+        String sql = "SELECT section FROM students WHERE id = ?";
         
         try {
             prepare = connect.prepareStatement(sql);
             prepare.setString(1, Data.username);
-            prepare.setString(2, Data.username);
             result = prepare.executeQuery();
             
             if (result.next()) {
                 return result.getString("section");
             }
+            
+            // If not found by ID, try by name
+            sql = "SELECT section FROM students WHERE name = ?";
+            prepare = connect.prepareStatement(sql);
+            prepare.setString(1, Data.username);
+            result = prepare.executeQuery();
+            
+            if (result.next()) {
+                return result.getString("section");
+            }
+            
         } catch (SQLException e) {
             System.err.println("Error getting student section: " + e.getMessage());
+        } finally {
+            closeDatabaseResources();
         }
         
         return null;
@@ -362,6 +417,16 @@ public class StudentDashBoardController implements Initializable {
         try {
             if (confirmSignOut()) {
                 closeDatabaseResources();
+                
+                // Close database connection
+                try {
+                    if (connect != null && !connect.isClosed()) {
+                        connect.close();
+                    }
+                } catch (SQLException e) {
+                    System.err.println("Error closing database connection: " + e.getMessage());
+                }
+                
                 Parent root = FXMLLoader.load(getClass().getResource("LoginPage.fxml"));
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 Scene scene = new Scene(root);
@@ -388,22 +453,32 @@ public class StudentDashBoardController implements Initializable {
     private void addSampleScheduleData() {
         scheduleList = FXCollections.observableArrayList();
         
-        ScheduleData mon = new ScheduleData();
-        mon.setCourseName("Monday");
-        mon.setMonday("Mathematics (09:00-10:00)\nPhysics (11:00-12:00)");
+        // Create sample weekly schedule
+        ScheduleData monday = new ScheduleData();
+        monday.setCourseName("Monday");
+        monday.setMonday("Mathematics (09:00-10:00)\nPhysics (11:00-12:00)");
         
-        ScheduleData tue = new ScheduleData();
-        tue.setCourseName("Tuesday");
-        tue.setTuesday("Chemistry (10:00-11:00)\nBiology (14:00-15:00)");
+        ScheduleData tuesday = new ScheduleData();
+        tuesday.setCourseName("Tuesday");
+        tuesday.setTuesday("Chemistry (10:00-11:00)\nBiology (14:00-15:00)");
         
-        ScheduleData wed = new ScheduleData();
-        wed.setCourseName("Wednesday");
-        wed.setWednesday("English (09:00-10:00)\nHistory (13:00-14:00)");
+        ScheduleData wednesday = new ScheduleData();
+        wednesday.setCourseName("Wednesday");
+        wednesday.setWednesday("English (09:00-10:00)\nHistory (13:00-14:00)");
         
-        scheduleList.addAll(mon, tue, wed);
+        ScheduleData thursday = new ScheduleData();
+        thursday.setCourseName("Thursday");
+        thursday.setThursday("Computer Science (10:00-11:00)\nMathematics (14:00-15:00)");
+        
+        ScheduleData friday = new ScheduleData();
+        friday.setCourseName("Friday");
+        friday.setFriday("Physics (09:00-10:00)\nChemistry (11:00-12:00)");
+        
+        scheduleList.addAll(monday, tuesday, wednesday, thursday, friday);
         scheduleTable.setItems(scheduleList);
     }
-  
+    
+    
     
     private void closeDatabaseResources() {
         try {

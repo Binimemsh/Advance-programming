@@ -299,7 +299,7 @@ public class AdminDashBoardController implements Initializable {
                 
                 // Change button text to indicate update mode
                 // You might want to add a separate update button or handle differently
-                showAlert("Update Mode", "Student data loaded for update. Make changes and click Update.");
+                updateStudentInDatabase(selected);
             } else {
                 showAlert("No Selection", "Please select a student to update.");
             }

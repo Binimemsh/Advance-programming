@@ -18,7 +18,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -57,7 +56,7 @@ public class TeacherDashBoardController implements Initializable {
     private Button byidbtn;
 
     @FXML
-    private TableColumn<StudentData, String> classcolumn;
+    private TableColumn<Student, String> classcolumn;
 
     @FXML
     private TableColumn<ScheduleData, String> coursecolumn;
@@ -66,13 +65,13 @@ public class TeacherDashBoardController implements Initializable {
     private TableColumn<ScheduleData, String> daycolumn;
 
     @FXML
-    private TableColumn<StudentData, String> fnamecolumn;
+    private TableColumn<Student, String> fnamecolumn;
 
     @FXML
     private TableColumn<GradeData, String> gradecolumn;
 
     @FXML
-    private TableColumn<StudentData, String> idcolumn;
+    private TableColumn<Student, String> idcolumn;
 
     @FXML
     private Button liststudbtn;
@@ -81,7 +80,7 @@ public class TeacherDashBoardController implements Initializable {
     private Button logoutbtn;
 
     @FXML
-    private TableColumn<StudentData, String> namecolumn;
+    private TableColumn<Student, String> namecolumn;
 
     @FXML
     private Button sbtgradebtn;
@@ -93,10 +92,10 @@ public class TeacherDashBoardController implements Initializable {
     private Button schedulebtn11;
 
     @FXML
-    private TableColumn<StudentData, String> sectioncolumn;
+    private TableColumn<Student, String> sectioncolumn;
 
     @FXML
-    private TableColumn<StudentData, String> sexcolumn;
+    private TableColumn<Student, String> sexcolumn;
 
     @FXML
     private TableColumn<GradeData, String> studFnamecolumn;
@@ -126,19 +125,23 @@ public class TeacherDashBoardController implements Initializable {
     private Label username;
 
     // TableViews (add these to your FXML)
-    @FXML private TableView<StudentData> studentTable;
+    @FXML private TableView<Student> studentTable;
     @FXML private TableView<ScheduleData> scheduleTable;
     @FXML private TableView<GradeData> gradeTable;
 
     // Data lists
-    private ObservableList<StudentData> studentList;
+    private ObservableList<Student> studentList;
     private ObservableList<ScheduleData> scheduleList;
     private ObservableList<GradeData> gradeList;
 
     public void displayUsername() {
         String user = Data.username;
-        user = user.substring(0, 1).toUpperCase() + user.substring(1);
-        username.setText(user);
+        if (user != null && !user.isEmpty()) {
+            user = user.substring(0, 1).toUpperCase() + user.substring(1);
+            username.setText(user);
+        } else {
+            username.setText("Teacher");
+        }
     }
 
     @Override
@@ -155,47 +158,64 @@ public class TeacherDashBoardController implements Initializable {
 
     private void initializeDatabase() {
         try {
-            connect = DatabaseConnection.connectDb();
+            // Use the same connection method as AdminDashBoardController
+            String url = "jdbc:mysql://localhost:3306/EduLearning";
+            String user = "root";
+            String password = ""; // Your password here
+            
+            connect = DriverManager.getConnection(url, user, password);
+            System.out.println("Database connected successfully in Teacher Dashboard!");
+            
+            // Create tables if they don't exist
             createTablesIfNotExist();
         } catch (Exception e) {
             showErrorAlert("Database Error", "Cannot connect to database: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     private void createTablesIfNotExist() {
-        String[] createTables = {
+        // Ensure grades table exists with proper structure
+        String createGradesTable = 
             "CREATE TABLE IF NOT EXISTS grades (" +
             "id INT AUTO_INCREMENT PRIMARY KEY, " +
             "student_id VARCHAR(50), " +
             "course_code VARCHAR(50), " +
             "grade VARCHAR(10), " +
-            "FOREIGN KEY (student_id) REFERENCES students(id))"
-        };
+            "FOREIGN KEY (student_id) REFERENCES students(id), " +
+            "UNIQUE KEY unique_grade (student_id, course_code))";
+        
+        // Create teacher_courses table if it doesn't exist
+        String createTeacherCoursesTable = 
+            "CREATE TABLE IF NOT EXISTS teacher_courses (" +
+            "teacher_id VARCHAR(50), " +
+            "course_code VARCHAR(50), " +
+            "PRIMARY KEY (teacher_id, course_code))";
         
         try (Statement stmt = connect.createStatement()) {
-            for (String sql : createTables) {
-                stmt.execute(sql);
-            }
+            stmt.execute(createGradesTable);
+            stmt.execute(createTeacherCoursesTable);
+            System.out.println("Tables checked/created successfully");
         } catch (SQLException e) {
             System.err.println("Error creating tables: " + e.getMessage());
         }
     }
 
     private void setupTableColumns() {
-        // Student table columns
+        // Student table columns - FIXED property names
         idcolumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        namecolumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        fnamecolumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-        sexcolumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
-        classcolumn.setCellValueFactory(new PropertyValueFactory<>("studentClass"));
+        namecolumn.setCellValueFactory(new PropertyValueFactory<>("firstName")); // Changed from "name"
+        fnamecolumn.setCellValueFactory(new PropertyValueFactory<>("lastName")); // Changed from "last_name"
+        sexcolumn.setCellValueFactory(new PropertyValueFactory<>("gender")); // Changed from "sex"
+        classcolumn.setCellValueFactory(new PropertyValueFactory<>("className")); // Changed from "studentClass"
         sectioncolumn.setCellValueFactory(new PropertyValueFactory<>("section"));
 
-        // Schedule table columns
+        // Schedule table columns - FIXED: ScheduleData uses getter methods
         coursecolumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
         daycolumn.setCellValueFactory(new PropertyValueFactory<>("day"));
         timecolumn.setCellValueFactory(new PropertyValueFactory<>("time"));
 
-        // Grade table columns
+        // Grade table columns - FIXED property names
         studnamecolumn.setCellValueFactory(new PropertyValueFactory<>("studentName"));
         studFnamecolumn.setCellValueFactory(new PropertyValueFactory<>("studentLastName"));
         gradecolumn.setCellValueFactory(new PropertyValueFactory<>("grade"));
@@ -241,7 +261,7 @@ public class TeacherDashBoardController implements Initializable {
             result = prepare.executeQuery();
             
             while (result.next()) {
-                studentList.add(new StudentData(
+                studentList.add(new Student(
                     result.getString("id"),
                     result.getString("name"),
                     result.getString("last_name"),
@@ -253,8 +273,15 @@ public class TeacherDashBoardController implements Initializable {
             
             studentTable.setItems(studentList);
             
+            if (studentList.isEmpty()) {
+                showInfoAlert("No Students", "No students found in the database");
+            }
+            
         } catch (SQLException e) {
             showErrorAlert("Database Error", "Failed to load students: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeDatabaseResources();
         }
     }
 
@@ -268,7 +295,7 @@ public class TeacherDashBoardController implements Initializable {
             result = prepare.executeQuery();
             
             while (result.next()) {
-                studentList.add(new StudentData(
+                studentList.add(new Student(
                     result.getString("id"),
                     result.getString("name"),
                     result.getString("last_name"),
@@ -286,6 +313,8 @@ public class TeacherDashBoardController implements Initializable {
             
         } catch (SQLException e) {
             showErrorAlert("Database Error", "Failed to search students: " + e.getMessage());
+        } finally {
+            closeDatabaseResources();
         }
     }
 
@@ -299,7 +328,7 @@ public class TeacherDashBoardController implements Initializable {
             result = prepare.executeQuery();
             
             if (result.next()) {
-                studentList.add(new StudentData(
+                studentList.add(new Student(
                     result.getString("id"),
                     result.getString("name"),
                     result.getString("last_name"),
@@ -315,6 +344,8 @@ public class TeacherDashBoardController implements Initializable {
             
         } catch (SQLException e) {
             showErrorAlert("Database Error", "Failed to search student: " + e.getMessage());
+        } finally {
+            closeDatabaseResources();
         }
     }
 
@@ -328,36 +359,96 @@ public class TeacherDashBoardController implements Initializable {
     }
 
     private void displayTeacherSchedule() {
+        scheduleList = FXCollections.observableArrayList();
         
-      
-        String sql = "SELECT * FROM schedule WHERE teacher_id = ? OR teacher_name = ?";
+        // First, try to get teacher's courses
+        String teacherName = getTeacherName();
+        if (teacherName == null) {
+            teacherName = Data.username; // Fallback to username
+        }
+        
+        // Query schedule for this teacher's courses
+        // Assuming schedule has teacher_name column or we join with teacher_courses
+        String sql = "SELECT s.course_name, s.day, s.time, s.class, s.section " +
+                    "FROM schedule s " +
+                    "WHERE s.course_name IN (SELECT course_code FROM teacher_courses WHERE teacher_id = ?) " +
+                    "OR s.teacher_name = ? " +
+                    "ORDER BY FIELD(s.day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'), s.time";
         
         try {
             prepare = connect.prepareStatement(sql);
-            prepare.setString(1, Data.username); // Using username as teacher identifier
-            prepare.setString(2, Data.username);
+            prepare.setString(1, Data.username);
+            prepare.setString(2, teacherName);
             result = prepare.executeQuery();
             
             while (result.next()) {
-                scheduleList.add(new ScheduleData(
+                // Use the factory method to create ScheduleData
+                ScheduleData schedule = ScheduleData.createDailySchedule(
                     result.getString("course_name"),
                     result.getString("day"),
                     result.getString("time"),
                     result.getString("class"),
                     result.getString("section")
-                ));
+                );
+                scheduleList.add(schedule);
             }
             
             scheduleTable.setItems(scheduleList);
             
+            if (scheduleList.isEmpty()) {
+                // Show sample schedule if no data found
+                addSampleScheduleData();
+                showInfoAlert("Schedule", "No schedule found for teacher. Showing sample data.");
+            }
+            
         } catch (SQLException e) {
             // If schedule table doesn't exist or has different structure, show sample data
-            showInfoAlert("Error", "Something wrong");
-
+            System.err.println("Error loading schedule: " + e.getMessage());
+            addSampleScheduleData();
+            showInfoAlert("Schedule", "Using sample schedule data.");
+        } finally {
+            closeDatabaseResources();
         }
     }
 
-   
+    private void addSampleScheduleData() {
+        scheduleList = FXCollections.observableArrayList();
+        
+        // Add sample schedule data
+        scheduleList.add(ScheduleData.createDailySchedule(
+            "Mathematics", "Monday", "09:00-10:00", "10A", "A"
+        ));
+        scheduleList.add(ScheduleData.createDailySchedule(
+            "Physics", "Monday", "11:00-12:00", "10B", "B"
+        ));
+        scheduleList.add(ScheduleData.createDailySchedule(
+            "Chemistry", "Tuesday", "10:00-11:00", "11A", "A"
+        ));
+        scheduleList.add(ScheduleData.createDailySchedule(
+            "Biology", "Wednesday", "14:00-15:00", "11B", "B"
+        ));
+        
+        scheduleTable.setItems(scheduleList);
+    }
+
+    private String getTeacherName() {
+        String sql = "SELECT name FROM teachers WHERE id = ? OR email = ?";
+        
+        try {
+            prepare = connect.prepareStatement(sql);
+            prepare.setString(1, Data.username);
+            prepare.setString(2, Data.username + "@school.com"); // Assuming email format
+            result = prepare.executeQuery();
+            
+            if (result.next()) {
+                return result.getString("name");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting teacher name: " + e.getMessage());
+        }
+        
+        return null;
+    }
 
     // GRADE MANAGEMENT
     @FXML
@@ -381,35 +472,57 @@ public class TeacherDashBoardController implements Initializable {
                 return;
             }
             
+            // Check if course exists
+            if (!courseExists(courseCode)) {
+                showErrorAlert("Course Not Found", "Course with code " + courseCode + " does not exist");
+                return;
+            }
+            
+            // Insert or update grade
             String sql = "INSERT INTO grades (student_id, course_code, grade) VALUES (?, ?, ?) " +
-                        "ON DUPLICATE KEY UPDATE grade = ?";
+                        "ON DUPLICATE KEY UPDATE grade = VALUES(grade)";
             
             try {
                 prepare = connect.prepareStatement(sql);
                 prepare.setString(1, studentId);
                 prepare.setString(2, courseCode);
                 prepare.setString(3, grade);
-                prepare.setString(4, grade);
                 
-                prepare.executeUpdate();
-                showSuccessMessage("Grade submitted successfully!");
-                clearGradeFields();
-                displayGrades();
+                int rowsAffected = prepare.executeUpdate();
+                
+                if (rowsAffected > 0) {
+                    showSuccessMessage("Grade submitted successfully!");
+                    clearGradeFields();
+                    displayGrades();
+                } else {
+                    showErrorAlert("Submission Failed", "Failed to submit grade");
+                }
                 
             } catch (SQLException e) {
-                showErrorAlert("Database Error", "Failed to submit grade: " + e.getMessage());
+                if (e.getMessage().contains("Duplicate entry")) {
+                    showErrorAlert("Duplicate Grade", "Grade already exists for this student and course. Use update instead.");
+                } else {
+                    showErrorAlert("Database Error", "Failed to submit grade: " + e.getMessage());
+                }
+            } finally {
+                closeDatabaseResources();
             }
         }
     }
 
     @FXML
     void handleUpdateGrade(ActionEvent event) {
-        if (gradeTable.getSelectionModel().getSelectedItem() == null) {
+        GradeData selectedGrade = gradeTable.getSelectionModel().getSelectedItem();
+        if (selectedGrade == null) {
             showErrorAlert("No Selection", "Please select a grade record to update");
             return;
         }
         
-        if (validateGradeFields()) {
+        // Populate fields with selected grade data
+        texstudid.setText(selectedGrade.getStudentId());
+        txtcourscode.setText(selectedGrade.getCourseCode());
+        
+        if (validateGradeFieldsForUpdate()) {
             String studentId = texstudid.getText().trim();
             String courseCode = txtcourscode.getText().trim();
             String grade = txtgrade.getText().trim();
@@ -434,6 +547,8 @@ public class TeacherDashBoardController implements Initializable {
                 
             } catch (SQLException e) {
                 showErrorAlert("Database Error", "Failed to update grade: " + e.getMessage());
+            } finally {
+                closeDatabaseResources();
             }
         }
     }
@@ -441,11 +556,12 @@ public class TeacherDashBoardController implements Initializable {
     private void displayGrades() {
         gradeList = FXCollections.observableArrayList();
         
-        // Join grades with students table to get student names
+        // First try to get grades for teacher's courses
         String sql = "SELECT g.student_id, g.course_code, g.grade, s.name, s.last_name " +
                     "FROM grades g " +
                     "JOIN students s ON g.student_id = s.id " +
-                    "WHERE g.course_code IN (SELECT course_code FROM teacher_courses WHERE teacher_id = ?)";
+                    "WHERE g.course_code IN (SELECT course_code FROM teacher_courses WHERE teacher_id = ?) " +
+                    "ORDER BY g.student_id, g.course_code";
         
         try {
             prepare = connect.prepareStatement(sql);
@@ -464,9 +580,18 @@ public class TeacherDashBoardController implements Initializable {
             
             gradeTable.setItems(gradeList);
             
+            // If no grades found for teacher's courses, show all grades
+            if (gradeList.isEmpty()) {
+                showInfoAlert("Grades", "No grades found for your courses. Showing all grades.");
+                displayAllGrades();
+            }
+            
         } catch (SQLException e) {
-            // If the query fails, try a simpler approach
+            // If teacher_courses table doesn't exist, show all grades
+            System.err.println("Error loading teacher's grades: " + e.getMessage());
             displayAllGrades();
+        } finally {
+            closeDatabaseResources();
         }
     }
 
@@ -474,7 +599,8 @@ public class TeacherDashBoardController implements Initializable {
         gradeList = FXCollections.observableArrayList();
         String sql = "SELECT g.student_id, g.course_code, g.grade, s.name, s.last_name " +
                     "FROM grades g " +
-                    "JOIN students s ON g.student_id = s.id";
+                    "JOIN students s ON g.student_id = s.id " +
+                    "ORDER BY g.student_id, g.course_code";
         
         try {
             prepare = connect.prepareStatement(sql);
@@ -494,43 +620,87 @@ public class TeacherDashBoardController implements Initializable {
             
         } catch (SQLException e) {
             showErrorAlert("Database Error", "Failed to load grades: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeDatabaseResources();
         }
     }
 
-    // MATERIAL MANAGEMENT
+    // MATERIAL MANAGEMENT - FIXED FXML path
     @FXML
     void handleAdMaterial(ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/admin_panel.fxml"));
+            // Changed from "/application/admin_panel.fxml" to the correct path
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("admin_panel.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
             stage.setTitle("PDF Management - Add Teaching Materials");
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root, 600, 400));
+            stage.setScene(new Scene(root, 800, 600));
             stage.show();
 
         } catch (Exception e) {
             e.printStackTrace();
-            showErrorAlert("Cannot open PDF management panel");
+            showErrorAlert("Cannot open PDF management panel: " + e.getMessage());
         }
     }
 
     // VALIDATION METHODS
     private boolean validateGradeFields() {
-        if (texstudid.getText().isEmpty() || txtcourscode.getText().isEmpty() || txtgrade.getText().isEmpty()) {
-            showErrorAlert("Validation Error", "Please fill all grade fields");
+        if (texstudid.getText().isEmpty()) {
+            showErrorAlert("Validation Error", "Please enter Student ID");
             return false;
         }
         
-        // Validate grade format (you can customize this)
-        String grade = txtgrade.getText().trim();
-        if (!grade.matches("[A-F][+-]?|[0-9]{1,3}")) {
-            showErrorAlert("Validation Error", "Please enter a valid grade (A-F, A+, B-, or 0-100)");
+        if (txtcourscode.getText().isEmpty()) {
+            showErrorAlert("Validation Error", "Please enter Course Code");
+            return false;
+        }
+        
+        if (txtgrade.getText().isEmpty()) {
+            showErrorAlert("Validation Error", "Please enter Grade");
+            return false;
+        }
+        
+        // Validate grade format
+        String grade = txtgrade.getText().trim().toUpperCase();
+        if (!isValidGrade(grade)) {
+            showErrorAlert("Validation Error", "Please enter a valid grade (A-F with optional +/-, or 0-100)");
             return false;
         }
         
         return true;
+    }
+
+    private boolean validateGradeFieldsForUpdate() {
+        if (txtgrade.getText().isEmpty()) {
+            showErrorAlert("Validation Error", "Please enter Grade");
+            return false;
+        }
+        
+        String grade = txtgrade.getText().trim().toUpperCase();
+        if (!isValidGrade(grade)) {
+            showErrorAlert("Validation Error", "Please enter a valid grade (A-F with optional +/-, or 0-100)");
+            return false;
+        }
+        
+        return true;
+    }
+
+    private boolean isValidGrade(String grade) {
+        // Accept letter grades: A, B, C, D, F with optional +/-
+        if (grade.matches("[A-F][+-]?")) {
+            return true;
+        }
+        
+        // Accept numeric grades: 0-100
+        if (grade.matches("\\d{1,3}")) {
+            int numericGrade = Integer.parseInt(grade);
+            return numericGrade >= 0 && numericGrade <= 100;
+        }
+        
+        return false;
     }
 
     private boolean studentExists(String studentId) {
@@ -540,7 +710,24 @@ public class TeacherDashBoardController implements Initializable {
             prepare = connect.prepareStatement(sql);
             prepare.setString(1, studentId);
             result = prepare.executeQuery();
-            return result.next();
+            boolean exists = result.next();
+            closeDatabaseResources();
+            return exists;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    private boolean courseExists(String courseCode) {
+        String sql = "SELECT code FROM courses WHERE code = ?";
+        
+        try {
+            prepare = connect.prepareStatement(sql);
+            prepare.setString(1, courseCode);
+            result = prepare.executeQuery();
+            boolean exists = result.next();
+            closeDatabaseResources();
+            return exists;
         } catch (SQLException e) {
             return false;
         }
@@ -553,21 +740,43 @@ public class TeacherDashBoardController implements Initializable {
         txtgrade.clear();
     }
 
+    private void closeDatabaseResources() {
+        try {
+            if (result != null) {
+                result.close();
+                result = null;
+            }
+            if (prepare != null) {
+                prepare.close();
+                prepare = null;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error closing database resources: " + e.getMessage());
+        }
+    }
+
     @FXML
     void signOut(ActionEvent event) {
         try {
             if (confirmSignOut()) {
+                closeDatabaseResources();
+                try {
+                    if (connect != null && !connect.isClosed()) {
+                        connect.close();
+                    }
+                } catch (SQLException e) {
+                    System.err.println("Error closing database connection: " + e.getMessage());
+                }
+                
                 Parent root = FXMLLoader.load(getClass().getResource("LoginPage.fxml"));
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 Scene scene = new Scene(root);
                 stage.setScene(scene);
                 stage.show();
                 stage.centerOnScreen();
-            } else {
-                showErrorAlert("Sign Out Cancelled", "You are still signed in.");
             }
         } catch (IOException e) {
-            showErrorAlert("Error", "Cannot load login screen.");
+            showErrorAlert("Error", "Cannot load login screen: " + e.getMessage());
         }
     }
 

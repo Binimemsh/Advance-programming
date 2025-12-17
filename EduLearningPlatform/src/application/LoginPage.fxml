@@ -39,7 +39,7 @@
       <Pane fx:id="loginpane" layoutX="480.0" layoutY="85.0" prefHeight="278.0" prefWidth="238.0" styleClass="loginpane" stylesheets="@application.css">
          <children>
             <TextField fx:id="usernameid" layoutX="80.0" layoutY="48.0" promptText="\@example" />
-            <Hyperlink fx:id="fgtpwd" layoutX="82.0" layoutY="147.0" text="forget password?" />
+            <Hyperlink fx:id="fgtpwd" layoutX="82.0" layoutY="147.0" onAction="#forgetPassword" text="forget password?" />
             <Text fill="#0077b6" layoutX="100.0" layoutY="39.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Login">
                <font>
                   <Font name="System Bold" size="24.0" />

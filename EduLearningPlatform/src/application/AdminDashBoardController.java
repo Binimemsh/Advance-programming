@@ -262,7 +262,7 @@ public class AdminDashBoardController implements Initializable {
             try {
                 String query = "INSERT INTO students (id, name, last_name, gender, class, section) VALUES (?, ?, ?, ?, ?, ?)";
                 PreparedStatement ps = connection.prepareStatement(query);
-                ps.setInt(1, Integer.parseInt(txtstudid.getText()));
+                ps.setString(1, txtstudid.getText());
                 ps.setString(2, txtstudname.getText());
                 ps.setString(3, txtstudLname.getText());
                 ps.setString(4, txtstudsex.getValue());
@@ -278,9 +278,7 @@ public class AdminDashBoardController implements Initializable {
                 ps.close();
             } catch (SQLException e) {
                 showAlert("Database Error", "Error adding student: " + e.getMessage());
-            } catch (NumberFormatException e) {
-                showAlert("Input Error", "Student ID must be a number!");
-            }
+            } 
         }
     }
     
@@ -403,12 +401,6 @@ public class AdminDashBoardController implements Initializable {
             return false;
         }
         
-        try {
-            Integer.parseInt(txtstudid.getText());
-        } catch (NumberFormatException e) {
-            showAlert("Validation Error", "Student ID must be a number!");
-            return false;
-        }
         
         return true;
     }
@@ -420,7 +412,7 @@ public class AdminDashBoardController implements Initializable {
             try {
                 String query = "INSERT INTO teachers (id, name, last_name, field, email) VALUES (?, ?, ?, ?, ?)";
                 PreparedStatement ps = connection.prepareStatement(query);
-                ps.setInt(1, Integer.parseInt(txtteacherid.getText()));
+                ps.setString(1, txtteacherid.getText());
                 ps.setString(2, txtteachername.getText());
                 ps.setString(3, txtteacherLname.getText());
                 ps.setString(4, txtteacherfield.getText());
@@ -435,9 +427,7 @@ public class AdminDashBoardController implements Initializable {
                 ps.close();
             } catch (SQLException e) {
                 showAlert("Database Error", "Error adding teacher: " + e.getMessage());
-            } catch (NumberFormatException e) {
-                showAlert("Input Error", "Teacher ID must be a number!");
-            }
+            } 
         }
     }
     
@@ -445,6 +435,8 @@ public class AdminDashBoardController implements Initializable {
     private void handleUpdateTeacher() {
         if (teacherTable != null) {
             Teacher selected = teacherTable.getSelectionModel().getSelectedItem();
+            
+            
             if (selected != null) {
                 // Populate form
                 txtteacherid.setText(String.valueOf(selected.getId()));
@@ -457,6 +449,7 @@ public class AdminDashBoardController implements Initializable {
             } else {
                 showAlert("No Selection", "Please select a teacher to update.");
             }
+            
         }
     }
     
@@ -540,12 +533,7 @@ public class AdminDashBoardController implements Initializable {
             return false;
         }
         
-        try {
-            Integer.parseInt(txtteacherid.getText());
-        } catch (NumberFormatException e) {
-            showAlert("Validation Error", "Teacher ID must be a number!");
-            return false;
-        }
+        
         
         return true;
     }

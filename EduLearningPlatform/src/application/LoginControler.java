@@ -168,7 +168,7 @@ public class LoginControler implements Initializable{
             connection = DatabaseConnection.connectDb();
             
             // SQL query to check user credentials
-            String sql = "SELECT * FROM users WHERE username = ? AND password = ? AND role = ? AND status = 'active'";
+            String sql = "SELECT * FROM users WHERE username = ? AND password = ? AND role = ? ";
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, password); // You should hash passwords in real applications

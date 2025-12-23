@@ -142,8 +142,8 @@ public class StudentDashBoardController implements Initializable {
         displayStudentResults();
         
         // Show schedule section by default
-        resultsection.setVisible(true);
-        schedulesection.setVisible(false);
+        resultsection.setVisible(false);
+        schedulesection.setVisible(true);
     }
 
     private void initializeDatabase() {
@@ -170,9 +170,9 @@ public class StudentDashBoardController implements Initializable {
         columnthu.setCellValueFactory(new PropertyValueFactory<>("thursday"));
         columnfri.setCellValueFactory(new PropertyValueFactory<>("friday"));
 
-        // Results table columns - Using property names that match GradeData getters
-        idcolumn.setCellValueFactory(new PropertyValueFactory<>("studentId"));
-        namecolumn.setCellValueFactory(new PropertyValueFactory<>("courseName"));
+        // Results table columns - FIXED: Use correct property names for GradeData
+        idcolumn.setCellValueFactory(new PropertyValueFactory<>("courseCode")); // Changed from "studentId"
+        namecolumn.setCellValueFactory(new PropertyValueFactory<>("courseName")); // Changed from "courseName"
         resultcolumn.setCellValueFactory(new PropertyValueFactory<>("grade"));
     }
 
@@ -185,7 +185,7 @@ public class StudentDashBoardController implements Initializable {
             return;
         }
         
-        // Get student's class and section based on username
+        // Get student's class and section based on username (which is student ID)
         String studentClass = getStudentClass();
         String studentSection = getStudentSection();
         
@@ -290,22 +290,26 @@ public class StudentDashBoardController implements Initializable {
         
         if (connect == null) {
             showErrorAlert("Database Error", "No database connection");
-         
             return;
         }
         
-        // Query grades for the current student
+        // Query grades for the current student using student ID from Data.username
+        // First, let's find the student ID from username
+        String studentId = getStudentIdFromUsername();
+        if (studentId == null) {
+            showErrorAlert("Error", "Student ID not found. Please contact administrator.");
+            return;
+        }
+        
         String sql = "SELECT g.course_code, g.grade, c.name AS course_name " +
                     "FROM grades g " +
-                    "JOIN courses c ON g.course_code = c.code " +
-                    "JOIN students s ON g.student_id = s.id " +
-                    "WHERE s.id = ? OR s.name = ? " +
-                    "ORDER BY c.name";
+                    "LEFT JOIN courses c ON g.course_code = c.code " +
+                    "WHERE g.student_id = ? " +
+                    "ORDER BY g.course_code";
         
         try {
             prepare = connect.prepareStatement(sql);
-            prepare.setString(1, Data.username);
-            prepare.setString(2, Data.username);
+            prepare.setString(1, studentId);
             result = prepare.executeQuery();
             
             while (result.next()) {
@@ -313,18 +317,22 @@ public class StudentDashBoardController implements Initializable {
                 String courseCode = result.getString("course_code");
                 String grade = result.getString("grade");
                 
-                GradeData gradeData = new GradeData();
-                gradeData.setStudentId(Data.username);
-                
-                // Use course name if available, otherwise use course code
-                if (courseName != null && !courseName.isEmpty()) {
-                    gradeData.setCourseName(courseName);
-                } else {
-                    gradeData.setCourseName(courseCode);
+                // If course name is null, use course code
+                if (courseName == null || courseName.isEmpty()) {
+                    courseName = courseCode;
                 }
                 
-                gradeData.setCourseCode(courseCode);
-                gradeData.setGrade(grade != null ? grade : "N/A");
+                // Create GradeData object
+                GradeData gradeData = new GradeData(
+                    studentId,  // studentId
+                    "",         // studentName (not needed for student view)
+                    "",         // studentLastName (not needed)
+                    courseCode, // courseCode
+                    grade       // grade (numeric 0-100)
+                );
+                
+                // Set course name for display
+                gradeData.setCourseName(courseName);
                 
                 gradeList.add(gradeData);
             }
@@ -332,17 +340,39 @@ public class StudentDashBoardController implements Initializable {
             resultTable.setItems(gradeList);
             
             if (gradeList.isEmpty()) {
-                showInfoAlert("Results", "No grades found for your account. Showing sample data.");
-             
+                showInfoAlert("Results", "No grades found for your account yet.");
             }
             
         } catch (SQLException e) {
             showErrorAlert("Database Error", "Error loading results: " + e.getMessage());
             e.printStackTrace();
-            
         } finally {
             closeDatabaseResources();
         }
+    }
+
+    // NEW METHOD: Get student ID from username
+    private String getStudentIdFromUsername() {
+        if (connect == null) return null;
+        
+        String sql = "SELECT id FROM students WHERE id = ? OR name = ?";
+        
+        try {
+            prepare = connect.prepareStatement(sql);
+            prepare.setString(1, Data.username);
+            prepare.setString(2, Data.username);
+            result = prepare.executeQuery();
+            
+            if (result.next()) {
+                return result.getString("id");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting student ID: " + e.getMessage());
+        } finally {
+            closeDatabaseResources();
+        }
+        
+        return null;
     }
 
     private String getStudentClass() {
@@ -477,8 +507,6 @@ public class StudentDashBoardController implements Initializable {
         scheduleList.addAll(monday, tuesday, wednesday, thursday, friday);
         scheduleTable.setItems(scheduleList);
     }
-    
-    
     
     private void closeDatabaseResources() {
         try {

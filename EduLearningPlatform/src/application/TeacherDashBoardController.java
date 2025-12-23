@@ -181,7 +181,7 @@ public class TeacherDashBoardController implements Initializable {
             "id INT AUTO_INCREMENT PRIMARY KEY, " +
             "student_id VARCHAR(50), " +
             "course_code VARCHAR(50), " +
-            "grade VARCHAR(10), " +
+            "grade VARCHAR(10), " +  // This will store numeric grades (0-100)
             "FOREIGN KEY (student_id) REFERENCES students(id), " +
             "UNIQUE KEY unique_grade (student_id, course_code))";
         
@@ -466,6 +466,12 @@ public class TeacherDashBoardController implements Initializable {
             String courseCode = txtcourscode.getText().trim();
             String grade = txtgrade.getText().trim();
             
+            // Validate that grade is a number 0-100
+            if (!isValidNumericGrade(grade)) {
+                showErrorAlert("Validation Error", "Please enter a valid numeric grade (0-100)");
+                return;
+            }
+            
             // Check if student exists
             if (!studentExists(studentId)) {
                 showErrorAlert("Student Not Found", "Student with ID " + studentId + " does not exist");
@@ -478,7 +484,7 @@ public class TeacherDashBoardController implements Initializable {
                 return;
             }
             
-            // Insert or update grade
+            // Insert or update grade with numeric value (0-100)
             String sql = "INSERT INTO grades (student_id, course_code, grade) VALUES (?, ?, ?) " +
                         "ON DUPLICATE KEY UPDATE grade = VALUES(grade)";
             
@@ -486,12 +492,12 @@ public class TeacherDashBoardController implements Initializable {
                 prepare = connect.prepareStatement(sql);
                 prepare.setString(1, studentId);
                 prepare.setString(2, courseCode);
-                prepare.setString(3, grade);
+                prepare.setString(3, grade); // Store numeric grade (0-100)
                 
                 int rowsAffected = prepare.executeUpdate();
                 
                 if (rowsAffected > 0) {
-                    showSuccessMessage("Grade submitted successfully!");
+                    showSuccessMessage("Grade submitted successfully! (Grade: " + grade + ")");
                     clearGradeFields();
                     displayGrades();
                 } else {
@@ -527,18 +533,24 @@ public class TeacherDashBoardController implements Initializable {
             String courseCode = txtcourscode.getText().trim();
             String grade = txtgrade.getText().trim();
             
+            // Validate that grade is a number 0-100
+            if (!isValidNumericGrade(grade)) {
+                showErrorAlert("Validation Error", "Please enter a valid numeric grade (0-100)");
+                return;
+            }
+            
             String sql = "UPDATE grades SET grade = ? WHERE student_id = ? AND course_code = ?";
             
             try {
                 prepare = connect.prepareStatement(sql);
-                prepare.setString(1, grade);
+                prepare.setString(1, grade); // Store numeric grade (0-100)
                 prepare.setString(2, studentId);
                 prepare.setString(3, courseCode);
                 
                 int affectedRows = prepare.executeUpdate();
                 
                 if (affectedRows > 0) {
-                    showSuccessMessage("Grade updated successfully!");
+                    showSuccessMessage("Grade updated successfully! (Grade: " + grade + ")");
                     clearGradeFields();
                     displayGrades();
                 } else {
@@ -557,25 +569,36 @@ public class TeacherDashBoardController implements Initializable {
         gradeList = FXCollections.observableArrayList();
         
         // First try to get grades for teacher's courses
-        String sql = "SELECT g.student_id, g.course_code, g.grade, s.name, s.last_name " +
+        String sql = "SELECT g.student_id, g.course_code, g.grade, s.name, s.last_name, c.name as course_name " +
                     "FROM grades g " +
                     "JOIN students s ON g.student_id = s.id " +
+                    "LEFT JOIN courses c ON g.course_code = c.code " +
                     "WHERE g.course_code IN (SELECT course_code FROM teacher_courses WHERE teacher_id = ?) " +
+                    "OR EXISTS (SELECT 1 FROM schedule sch WHERE sch.course_name = g.course_code AND sch.teacher_name = ?) " +
                     "ORDER BY g.student_id, g.course_code";
         
         try {
             prepare = connect.prepareStatement(sql);
             prepare.setString(1, Data.username);
+            prepare.setString(2, getTeacherName());
             result = prepare.executeQuery();
             
             while (result.next()) {
-                gradeList.add(new GradeData(
+                GradeData gradeData = new GradeData(
                     result.getString("student_id"),
                     result.getString("name"),
                     result.getString("last_name"),
                     result.getString("course_code"),
                     result.getString("grade")
-                ));
+                );
+                
+                // Set course name if available
+                String courseName = result.getString("course_name");
+                if (courseName != null && !courseName.isEmpty()) {
+                    gradeData.setCourseName(courseName);
+                }
+                
+                gradeList.add(gradeData);
             }
             
             gradeTable.setItems(gradeList);
@@ -597,9 +620,10 @@ public class TeacherDashBoardController implements Initializable {
 
     private void displayAllGrades() {
         gradeList = FXCollections.observableArrayList();
-        String sql = "SELECT g.student_id, g.course_code, g.grade, s.name, s.last_name " +
+        String sql = "SELECT g.student_id, g.course_code, g.grade, s.name, s.last_name, c.name as course_name " +
                     "FROM grades g " +
                     "JOIN students s ON g.student_id = s.id " +
+                    "LEFT JOIN courses c ON g.course_code = c.code " +
                     "ORDER BY g.student_id, g.course_code";
         
         try {
@@ -607,13 +631,21 @@ public class TeacherDashBoardController implements Initializable {
             result = prepare.executeQuery();
             
             while (result.next()) {
-                gradeList.add(new GradeData(
+                GradeData gradeData = new GradeData(
                     result.getString("student_id"),
                     result.getString("name"),
                     result.getString("last_name"),
                     result.getString("course_code"),
                     result.getString("grade")
-                ));
+                );
+                
+                // Set course name if available
+                String courseName = result.getString("course_name");
+                if (courseName != null && !courseName.isEmpty()) {
+                    gradeData.setCourseName(courseName);
+                }
+                
+                gradeList.add(gradeData);
             }
             
             gradeTable.setItems(gradeList);
@@ -625,6 +657,7 @@ public class TeacherDashBoardController implements Initializable {
             closeDatabaseResources();
         }
     }
+   
 
     // MATERIAL MANAGEMENT - FIXED FXML path
     @FXML
@@ -646,7 +679,7 @@ public class TeacherDashBoardController implements Initializable {
         }
     }
 
-    // VALIDATION METHODS
+    // VALIDATION METHODS FOR NUMERIC GRADES ONLY (0-100)
     private boolean validateGradeFields() {
         if (texstudid.getText().isEmpty()) {
             showErrorAlert("Validation Error", "Please enter Student ID");
@@ -663,10 +696,10 @@ public class TeacherDashBoardController implements Initializable {
             return false;
         }
         
-        // Validate grade format
-        String grade = txtgrade.getText().trim().toUpperCase();
-        if (!isValidGrade(grade)) {
-            showErrorAlert("Validation Error", "Please enter a valid grade (A-F with optional +/-, or 0-100)");
+        // Validate grade is numeric (0-100)
+        String grade = txtgrade.getText().trim();
+        if (!isValidNumericGrade(grade)) {
+            showErrorAlert("Validation Error", "Please enter a valid numeric grade (0-100)");
             return false;
         }
         
@@ -679,28 +712,37 @@ public class TeacherDashBoardController implements Initializable {
             return false;
         }
         
-        String grade = txtgrade.getText().trim().toUpperCase();
-        if (!isValidGrade(grade)) {
-            showErrorAlert("Validation Error", "Please enter a valid grade (A-F with optional +/-, or 0-100)");
+        String grade = txtgrade.getText().trim();
+        if (!isValidNumericGrade(grade)) {
+            showErrorAlert("Validation Error", "Please enter a valid numeric grade (0-100)");
             return false;
         }
         
         return true;
     }
 
-    private boolean isValidGrade(String grade) {
-        // Accept letter grades: A, B, C, D, F with optional +/-
-        if (grade.matches("[A-F][+-]?")) {
-            return true;
+    // VALIDATION: ONLY ACCEPT NUMERIC GRADES 0-100
+    private boolean isValidNumericGrade(String grade) {
+        // Check if it's a valid number
+        if (grade == null || grade.trim().isEmpty()) {
+            return false;
         }
         
-        // Accept numeric grades: 0-100
-        if (grade.matches("\\d{1,3}")) {
-            int numericGrade = Integer.parseInt(grade);
+        try {
+            // Parse the grade as an integer
+            int numericGrade = Integer.parseInt(grade.trim());
+            
+            // Check if it's in the valid range (0-100)
             return numericGrade >= 0 && numericGrade <= 100;
+        } catch (NumberFormatException e) {
+            // Not a valid number
+            return false;
         }
-        
-        return false;
+    }
+
+    // SIMPLIFIED GRADE VALIDATION METHOD (keeping for compatibility)
+    private boolean isValidGrade(String grade) {
+        return isValidNumericGrade(grade);
     }
 
     private boolean studentExists(String studentId) {
